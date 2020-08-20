@@ -28,7 +28,7 @@ resource "aws_security_group" "sg_tfinstance1" {
 }
 
 resource "aws_instance" "tfinstance1" {
-  ami                         = var.AMI[var.region] 
+  ami                         = var.amis[var.region] 
   instance_type               = var.instance_type
   key_name                    = "kp_instances"
   vpc_security_group_ids      = [ aws_security_group.sg_internal.id,

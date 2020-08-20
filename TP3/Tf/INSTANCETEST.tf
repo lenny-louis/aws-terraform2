@@ -7,7 +7,7 @@ resource "aws_security_group" "reseau_interne" {
      from_port = "0"
      to_port   = "65535"
      protocol  = "all"
-     cidr_blocks = [ "192.168.77.20/0" ]
+     cidr_blocks = [ "10.42.1.11/0" ]
    }
 
    # wordpress
@@ -15,7 +15,7 @@ resource "aws_security_group" "reseau_interne" {
      from_port = "0"
      to_port   = "65535"
      protocol  = "all"
-     cidr_blocks = [ "192.168.77.10/0" ]
+     cidr_blocks = [ "10.42.1.10/0" ]
    }
 
 
@@ -69,7 +69,7 @@ resource "aws_instance" "serveur-mariadb" {
   key_name                    = "tfkeypair1"
   vpc_security_group_ids      = [aws_security_group.sg_serveur-mariadb.id]
   subnet_id                   = aws_subnet.subnet_example.id
-  private_ip                  = "192.168.77.20"
+  private_ip                  = "10.42.1.11"
   associate_public_ip_address = "true"
   user_data                   = file("../Scripts/instance_init_mariadb.sh")
   tags = {

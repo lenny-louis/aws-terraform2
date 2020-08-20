@@ -34,7 +34,7 @@ variable "node_count" {
    default = 0
 }
 
-variable "AMI" {
+variable "amis" {
   type = map
   default = {
     "us-east-1" = "ami-0bcc094591f354be2"
