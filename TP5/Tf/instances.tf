@@ -7,8 +7,8 @@ resource "aws_key_pair" "kp_instances" {
 }
 
 # Adapter le nom à l'usage
-resource "aws_security_group" "sg_tfinstance1" {
-  name   = "sg_tfinstance1"
+resource "aws_security_group" "nginx_instance" {
+  name   = "nginx_instance"
   vpc_id = aws_vpc.vpc_example.id
   # autorise http de partout
   # ce n'est qu'un example d'application possible
@@ -27,26 +27,26 @@ resource "aws_security_group" "sg_tfinstance1" {
   }
 }
 
-resource "aws_instance" "tfinstance1" {
+resource "aws_instance" "nginx_instance" {
   ami                         = var.amis[var.region] 
   instance_type               = var.instance_type
   key_name                    = "kp_instances"
   vpc_security_group_ids      = [ aws_security_group.sg_internal.id,
-                                  aws_security_group.sg_tfinstance1.id ]
+                                  aws_security_group.nginx_instance.id ]
   subnet_id                   = aws_subnet.subnet_example.id
   private_ip                  = var.first_instance_ip
   # si nécessaire, une ip publique
   associate_public_ip_address = "true"
-  user_data                   = file("../Scripts/instance_init1.sh")
+  user_data                   = file("../Scripts/Instance_init_NGINX.sh")
   tags = {
     Name = "tfinstance1"
   }
 }
 
-resource "aws_instance" "node" {
-  count = var.node_count
+resource "aws_instance" "apache_instance" {
+  count = var.apache_instance_count
   ami                         = var.amis[var.region] 
-  instance_type               = var.node_type
+  instance_type               = var.apache_instance_type
   key_name                    = "kp_instances"
   vpc_security_group_ids      = [ aws_security_group.sg_internal.id ]
   subnet_id                   = aws_subnet.subnet_example.id
@@ -54,9 +54,9 @@ resource "aws_instance" "node" {
   # pas d'ip publique... généralement
   associate_public_ip_address = "false"
   # ou bien un init différent (dépend du style de cluster)
-  user_data                   = file("../Scripts/instance_init1.sh")
+  user_data                   = file("../Scripts/Instance_init_APACHE.sh")
   tags = {
-    Name = "node-${count.index + 1}"
+    Name = "apache_instance-${count.index + 1}"
   }
 }
 
@@ -66,6 +66,6 @@ output "tfinstance1_ip" {
   value = "${aws_instance.tfinstance1.*.public_ip}"
 }
 
-output "nodes_private_ip" {
-  value = "${aws_instance.node.*.private_ip}"
+output "apache_instances_private_ip" {
+  value = "${aws_instance.apache_instance.*.private_ip}"
 }
